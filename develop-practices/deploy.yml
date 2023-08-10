@@ -1,0 +1,65 @@
+---
+- name: Deploy a web application
+  hosts: webservers
+  vars:
+    service: httpd
+    fw_service: http
+    package:
+      - httpd
+
+  tasks:
+
+    - name: Install the webserver
+      ansible.builtin.yum: name={{ package }} state=latest
+
+    - name: Deploy web content
+      ansible.builtin.template:
+        src: templates/index.html.j2
+        dest: "{{ web_dest }}"
+
+    - name: Start the webserver
+      ansible.builtin.service:
+          name: "{{ service }}"
+          state: started
+          enabled: true
+
+    - name: Enable the {{ fw_service }} service in the firewall
+      ansible.posix.firewalld:
+          service: "{{ fw_service }}"
+          state: enabled
+          permanent: true
+          immediate: true
+
+- hosts:
+    - serverc.lab.example.com
+    - serverd.lab.example.com
+  vars:
+    service: mariadb
+    fw_service: mysql
+    package:
+      - mariadb-server
+
+  tasks:
+
+    - name: Install the database server
+      ansible.builtin.yum:
+        name: "{{ package }}"
+        state: latest
+
+    - name: Start the database server
+      ansible.builtin.shell:
+        cmd: systemctl enable --now {{ service }}
+
+    - name: Enable the {{ fw_service }} service in the firewall
+      ansible.posix.firewalld:
+        service: "{{ fw_service }}"
+        state: enabled
+        permanent: true
+        immediate: true
+
+- name: Test web application
+  hosts: webservers
+
+  tasks:
+
+    #TODO: Add test
