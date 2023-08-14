@@ -1,0 +1,13 @@
+---
+- name: Default filter demonstration
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+  tasks:
+
+    - name: Ensure that the variable my_var is displayed
+      ansible.builtin.debug:
+        msg: The value of the variable my_var is {{ my_var | default('blue') }}
+
+#ansible-navigator run default_value.yml --eei hub.lab.example.com/ee-supported-rhel8 --pp never -m stdout -e my_var=red
