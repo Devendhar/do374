@@ -1,0 +1,40 @@
+---
+- name: Demonstration of various lookup plugins
+  hosts: servera.lab.example.com
+  gather_facts: true
+  become: true
+
+  #ansible-navigator doc -t lookup -l
+  #ansible-navigator doc -t lookup ansible.builtin.dict
+
+  tasks:
+
+    - name: Ensure the variable is displayed on {{ inventory_hostname }}
+      ansible.builtin.debug:
+        msg: The value of the variable COUNTRY is {{ lookup('env', 'COUNTRY') }}
+
+    - name: Ensure the contents of /etc/fstab are displayed
+      ansible.builtin.debug:
+        msg: |
+          "{{ lookup('ansible.builtin.file', '/etc/fstab') }}"
+
+    - name: Display 2 files with query
+      ansible.builtin.debug:
+        msg: "{{ query('ansible.builtin.file', '/etc/fstab', '/etc/issue') }}"
+
+    - name: Display 2 files with lookup
+      ansible.builtin.debug:
+        msg: "{{ lookup('ansible.builtin.file', '/etc/fstab', '/etc/issue') }}"
+
+    - name: List directory contents with query
+      ansible.builtin.debug:
+        msg: "{{ query('ansible.builtin.pipe', 'ls') }}"
+
+    - name: List directory contents with lookup
+      ansible.builtin.debug:
+        msg: "{{ lookup('ansible.builtin.pipe', 'ls') }}"
+
+    - name: Retrieve data from webserver
+      ansible.builtin.debug:
+        msg: |
+          "{{ lookup('ansible.builtin.url', 'http://classroom.example.com') }}"
