@@ -1,0 +1,16 @@
+---
+- name: Read a remote file
+  hosts: servera.lab.example.com
+  become: false
+  gather_facts: false
+
+  tasks:
+
+    - name: Ensure remote file is read
+      register: my_data
+      ansible.builtin.slurp:
+        src: "{{ my_file | default('/etc/fstab') }}"
+
+    - name: Ensure content is displayed
+      ansible.builtin.debug:
+        var: my_data['content'] | b64decode | trim
