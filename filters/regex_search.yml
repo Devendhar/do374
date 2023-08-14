@@ -1,0 +1,21 @@
+---
+- name: regex_search filter demonstration
+  hosts: servera.lab.example.com
+  gather_facts: false
+  become: true
+
+  vars:
+    url_oc: https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz
+
+  tasks:
+
+    - name: Ensure openshift client is downloaded
+      ansible.builtin.uri:
+        url: "{{ url_oc }}"
+        dest: /var/tmp
+
+    - name: Ensure openshift client is extracted
+      ansible.builtin.unarchive:
+        remote_src: true
+        src: "{{ url_oc | regex_search('[a-z]+.*\\.tar\\.gz') }}"
+        dest: /usr/local/bin
