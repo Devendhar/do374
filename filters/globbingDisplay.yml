@@ -1,0 +1,14 @@
+---
+- name: Demonstrate globbing
+  hosts: localhost
+  become: false
+  gather_facts: false
+
+  #ansible-navigator run globbingDisplay.yml --ee false
+
+  tasks:
+
+    - name: Ensure f*.conf file contents are displayed
+      loop: "{{ query('ansible.builtin.fileglob', '/etc/f*.conf') }}"
+      ansible.builtin.debug:
+        msg: "{{ query('ansible.builtin.file', item) }}"
